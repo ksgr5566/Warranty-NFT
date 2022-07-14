@@ -1,0 +1,24 @@
+{
+  "name": "warranty-nft",
+  "version": "1.0.0",
+  "description": "Blockchain based eCommerce warranty system using NFTs ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "warranty",
+    "NFT",
+    "eCommerce"
+  ],
+  "author": "Kovvuri Sai Gopal Reddy",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+    "hardhat": "^2.10.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.7.0",
+    "dotenv": "^16.0.1"
+  }
+}
