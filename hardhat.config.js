@@ -1,4 +1,5 @@
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomiclabs/hardhat-truffle5");
 require("dotenv").config()
 
 module.exports = {
