@@ -15,9 +15,14 @@ contract("WarrantyNFT", (accounts) => {
         expect(result.receipt.status).to.equal(true)
     })
 
-    context("successfully replaces the item", async () => {
-        const res = await contractInstance.mint("No. 1", "No1.uri.com", false, false , 3 , 300, {from: alice})
-        const id = res.logs[0].args._tokenId
+    context("successfully replaces the item", () => {
+        
+        let res, id
+
+        beforeEach(async () => {
+            res = await contractInstance.mint("No. 1", "No1.uri.com", false, false , 3 , 300, {from: alice})
+            id = res.logs[0].args._tokenId
+        })
         
         it("should successfully replace if the caller is a valid one", async () => {
             const replaceResult = await contractInstance.itemReplace(id, "Replaced No. 1", "Replaced No1.uri.com", false, false , 3 , 300, {from: alice})
