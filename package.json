@@ -16,10 +16,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@nomiclabs/hardhat-truffle5": "^2.0.6",
-    "@nomiclabs/hardhat-web3": "^2.0.0",
     "chai": "^4.3.6",
-    "hardhat": "^2.10.1",
-    "web3": "^1.7.4"
+    "hardhat": "^2.10.1"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.0",
