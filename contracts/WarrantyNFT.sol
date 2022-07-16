@@ -91,13 +91,6 @@ contract WarrantyNFT is ReentrancyGuard {
         return _warrantyIdToOwner[_tokenId];
     }
 
-    function isValidTransfer(address _address, uint _tokenId) public view returns (bool) {
-        if (isCreator(_address, _tokenId) ) return true;
-        else if (isApprovedAddress(_address, _tokenId)) return true;
-        else if (isOwner(_address, _tokenId) && (areTransfersUnlimited(_tokenId) || _collection[_tokenId].numOfTransfersAvailable >=1)) return true;
-        return false;
-    }
-
     function setTransfersAvailable(uint _tokenId, uint _transfers) external onlyCreator(_tokenId) {
         _collection[_tokenId].numOfTransfersAvailable = _transfers;
     }
@@ -125,15 +118,19 @@ contract WarrantyNFT is ReentrancyGuard {
     }
 
     function transferFrom(address _to, uint _tokenId) external {
-        require(isValidTransfer(msg.sender, _tokenId));
-        if(isOwner(msg.sender, _tokenId)) {
-            if(!areTransfersUnlimited(_tokenId)) {
+    
+        if (isCreator(msg.sender, _tokenId) || isApprovedAddress(msg.sender, _tokenId)) {
+            _collection[_tokenId].timestamp = block.timestamp;
+            _transfer(_to, _tokenId);
+        }
+        else if (isOwner(msg.sender, _tokenId)) {
+            require(!isSoulbound(_tokenId), "The token is soulbound, cannot transfer!");
+            if(areTransfersUnlimited(_tokenId)) _transfer(_to, _tokenId);
+            else {
+                require(_collection[_tokenId].numOfTransfersAvailable >=1, "Transfers unavailable!");
                 _collection[_tokenId].numOfTransfersAvailable = _collection[_tokenId].numOfTransfersAvailable.sub(1);
             }
-        } else {
-            _collection[_tokenId].timestamp = block.timestamp;
         }
-        _transfer(_to, _tokenId);
     }
 
     function _transfer(address _to, uint _tokenId) private onlyValidToken(_tokenId) {
