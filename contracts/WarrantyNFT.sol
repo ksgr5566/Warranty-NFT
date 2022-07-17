@@ -29,13 +29,13 @@ contract WarrantyNFT is ReentrancyGuard {
         uint period;
         uint timestamp;
     }
-
+   
     Warranty[] private _collection;
 
     mapping (uint => address) private _warrantyIdToOwner;
     mapping (address => uint) private _ownerWarrantyCount;
     mapping (address => uint[]) private _creatorToWarrantyIds;
-    mapping (uint => address) private _warrantyIdToApprovedAddress; 
+    mapping (uint => address[]) private _warrantyIdToApprovedAddress; 
 
     modifier onlyCreator (uint _tokenId) {
         require(msg.sender == _collection[_tokenId].creator,
@@ -43,16 +43,25 @@ contract WarrantyNFT is ReentrancyGuard {
         _;
     }
 
-    modifier onlyCreatorOrApproved (uint _tokenId) {
-        require(msg.sender == _collection[_tokenId].creator || _warrantyIdToApprovedAddress[_tokenId] == msg.sender,
+    modifier onlyCreatorOrApproved(uint _tokenId) {
+        require(msg.sender == _collection[_tokenId].creator || isApprovedAddress(msg.sender, _tokenId),
                 "Sender is neither the creator not the approved one for the warranty!");
         _;
     }
 
-    modifier onlyValidToken (uint _tokenId) {
+    modifier onlyValidToken(uint _tokenId) {
         require(!(_collection.length == 0) && _tokenId <= _collection.length.sub(1),
                 "TokenId is non-existant!");
         _;
+    }
+
+    function isApprovedAddress(address _address, uint _tokenId) public view returns (bool) {
+        for(uint i = 0; i < _warrantyIdToApprovedAddress[_tokenId].length; i++) {
+            if(_warrantyIdToApprovedAddress[_tokenId][i] == _address) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function getWarranty(uint _tokenId) external view returns (address, string memory, string memory, bool, bool, bool, uint, uint, uint) {
@@ -62,32 +71,11 @@ contract WarrantyNFT is ReentrancyGuard {
                 warranty.numOfTransfersAvailable, warranty.period, warranty.timestamp);
     }
 
-    function isApprovedAddress(address _address, uint _tokenId) public view returns (bool) {
-        if (_address == _warrantyIdToApprovedAddress[_tokenId]) return true;
-        return false;   
+    function getApprovedAddress(uint _tokenId) external view returns (address[] memory) {
+        return _warrantyIdToApprovedAddress[_tokenId];
     }
 
-    function isOwner(address _address, uint _tokenId) public view returns (bool) {
-        if (_warrantyIdToOwner[_tokenId] == _address) return true;
-        return false;
-    }
-
-    function isCreator(address _address, uint _tokenId) public view returns (bool) {
-        if (_address == _collection[_tokenId].creator) return true;
-        return false;
-    }
-
-    function isSoulbound(uint _tokenId) public view returns (bool) {
-        if (_collection[_tokenId].isSoulbound) return true;
-        return false;
-    }
-
-    function areTransfersUnlimited(uint _tokenId) public view returns (bool) {
-        if (_collection[_tokenId].unlimitedTransfers) return true;
-        return false;
-    }
-
-    function getOwner(uint256 _tokenId) public view returns (address) {
+    function getOwner(uint256 _tokenId) external view returns (address) {
         return _warrantyIdToOwner[_tokenId];
     }
 
@@ -95,11 +83,11 @@ contract WarrantyNFT is ReentrancyGuard {
         _collection[_tokenId].numOfTransfersAvailable = _transfers;
     }
 
-    function name() public view returns (string memory) {
+    function name() external view returns (string memory) {
         return _name;
     }
 
-    function symbol() public view returns (string memory) {
+    function symbol() external view returns (string memory) {
         return _symbol;
     }
 
@@ -111,21 +99,20 @@ contract WarrantyNFT is ReentrancyGuard {
         uint id = _collection.length.sub(1);
         // console.log("Mint call id: '%d'", id);
         _creatorToWarrantyIds[msg.sender].push(id);
-        _warrantyIdToOwner[id] = msg.sender;
-        _ownerWarrantyCount[msg.sender] = _ownerWarrantyCount[msg.sender].add(1);
+        // _warrantyIdToOwner[id] = msg.sender;
+        // _ownerWarrantyCount[msg.sender] = _ownerWarrantyCount[msg.sender].add(1);
         emit Transfer(address(0), msg.sender, id);
         return id;
     }
 
-    function transferFrom(address _to, uint _tokenId) external {
-    
-        if (isCreator(msg.sender, _tokenId) || isApprovedAddress(msg.sender, _tokenId)) {
+    function transferTo(address _to, uint _tokenId) external {
+        if (msg.sender == _collection[_tokenId].creator || isApprovedAddress(msg.sender, _tokenId)) {
             _collection[_tokenId].timestamp = block.timestamp;
             _transfer(_to, _tokenId);
         }
-        else if (isOwner(msg.sender, _tokenId)) {
-            require(!isSoulbound(_tokenId), "The token is soulbound, cannot transfer!");
-            if(areTransfersUnlimited(_tokenId)) _transfer(_to, _tokenId);
+        else if (_warrantyIdToOwner[_tokenId] == msg.sender) {
+            require(!_collection[_tokenId].isSoulbound, "The token is soulbound, cannot transfer!");
+            if(_collection[_tokenId].unlimitedTransfers) _transfer(_to, _tokenId);
             else {
                 require(_collection[_tokenId].numOfTransfersAvailable >=1, "Transfers unavailable!");
                 _collection[_tokenId].numOfTransfersAvailable = _collection[_tokenId].numOfTransfersAvailable.sub(1);
@@ -135,13 +122,15 @@ contract WarrantyNFT is ReentrancyGuard {
 
     function _transfer(address _to, uint _tokenId) private onlyValidToken(_tokenId) {
         _warrantyIdToOwner[_tokenId] = _to;
-        _ownerWarrantyCount[msg.sender] = _ownerWarrantyCount[msg.sender].sub(1);
+        if(!isApprovedAddress(msg.sender, _tokenId) &&  !(msg.sender == _collection[_tokenId].creator)) {
+            _ownerWarrantyCount[msg.sender] = _ownerWarrantyCount[msg.sender].sub(1);
+        }
         _ownerWarrantyCount[_to] = _ownerWarrantyCount[_to].add(1);
         emit Transfer(msg.sender, _to, _tokenId);
     }
 
     function approve(address _approved, uint256 _tokenId) external onlyCreator(_tokenId) {
-        _warrantyIdToApprovedAddress[_tokenId] = _approved;
+        _warrantyIdToApprovedAddress[_tokenId].push(_approved);
         emit Approval(msg.sender, _approved, _tokenId);
     }
 
@@ -154,14 +143,15 @@ contract WarrantyNFT is ReentrancyGuard {
     }
 
     function isValidWarranty(uint _tokenId) public view onlyValidToken(_tokenId) returns (bool) {
-        if (_warrantyIdToOwner[_tokenId] == _collection[_tokenId].creator || 
-            (_collection[_tokenId].timestamp.add(_collection[_tokenId].period.mul(1 days)) < block.timestamp)
+        if (_warrantyIdToOwner[_tokenId] == address(0) || 
+            (_collection[_tokenId].timestamp.add(_collection[_tokenId].period.mul(1 days)) > block.timestamp)
            ) return true;
         return false;
     }
 
-    function decayWarranty(uint _tokenId) public onlyValidToken(_tokenId) {
-        if(!isValidWarranty(_tokenId)) _transfer(address(0), _tokenId);
+    function decayWarranty(uint _tokenId) public onlyValidToken(_tokenId) onlyCreatorOrApproved(_tokenId) {
+        require(!isValidWarranty(_tokenId));
+        _transfer(address(0), _tokenId);
     }
 
     function getCollectionLength() external view returns (uint) {
@@ -178,7 +168,7 @@ contract WarrantyNFT is ReentrancyGuard {
 
         uint id = mint(_itemSerialNumber, _uri, _soulbound, _unlimitedTransfers, _numOfTransfers, _period);
         _transfer(_warrantyIdToOwner[_prevTokenId], id);
-        decayWarranty(_prevTokenId);
+        _transfer(address(0), _prevTokenId);
         emit ItemReplace(_prevTokenId, id);
     }
 
