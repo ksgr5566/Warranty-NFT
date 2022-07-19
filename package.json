@@ -23,6 +23,11 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.0",
-    "dotenv": "^16.0.1"
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "formidable": "^2.0.1",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "web3.storage": "^4.3.0"
   }
 }
