@@ -8,7 +8,6 @@ async function downloadFile(url) {
     const uuid = crypto.randomUUID()
 
     const path = Path.resolve("./utils", "uploads", uuid)
-    console.log(path)
     const writer = fs.createWriteStream(path)
     
     const response = await axios({
@@ -18,10 +17,12 @@ async function downloadFile(url) {
     })
     
     response.data.pipe(writer)
-    
+
     return new Promise((resolve, reject) => {
-        writer.on('finish', resolve(uuid))
         writer.on('error', reject)
+        response.data.on('end', () => {
+            resolve(uuid)
+        })
     })
 }
 

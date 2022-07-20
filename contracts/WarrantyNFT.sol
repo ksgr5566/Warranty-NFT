@@ -22,23 +22,10 @@ contract WarrantyNFT is ReentrancyGuard {
         address creator;
         string itemSerialNumber;
         string uri;
-        bool isSoulbound;
         bool unlimitedTransfers;
         uint numOfTransfersAvailable;
         uint period;
         uint timestamp;
-    }
-
-    struct RetailerWarranty {
-        address retailer;
-        string itemSerialNumber;
-        string uri;
-        bool isSoulbound;
-        bool unlimitedTransfers;
-        uint numOfTransfersAvailable;
-        uint period;
-        uint timestamp;
-        uint id;
     }
    
     Warranty[] private _collection;
@@ -48,7 +35,6 @@ contract WarrantyNFT is ReentrancyGuard {
     mapping (address => uint[]) private _creatorToWarrantyIds;
     mapping (address => uint[]) private _retailerToWarrantyIds;
     mapping (uint => address) private _warrantyIdToApprovedAddress;
-    mapping (uint => RetailerWarranty) private _warrantyIdToRetailerWarranty; 
 
     modifier onlyCreator (uint _tokenId) {
         require(msg.sender == _collection[_tokenId].creator,
@@ -79,10 +65,10 @@ contract WarrantyNFT is ReentrancyGuard {
         
     }
 
-    function getWarranty(uint _tokenId) external view returns (address, string memory, string memory, bool, bool, uint, uint, uint) {
+    function getWarranty(uint _tokenId) external view returns (address, string memory, string memory, bool, uint, uint, uint) {
         Warranty storage warranty = _collection[_tokenId]; 
         return (warranty.creator, warranty.itemSerialNumber, warranty.uri, 
-                warranty.isSoulbound, warranty.unlimitedTransfers,
+                warranty.unlimitedTransfers,
                 warranty.numOfTransfersAvailable, warranty.period, warranty.timestamp);
     }
 
@@ -107,10 +93,10 @@ contract WarrantyNFT is ReentrancyGuard {
     }
 
     function mint(string memory _itemSerialNumber, string memory _uri, 
-                  bool _soulbound, bool _unlimitedTransfers, 
+                  bool _unlimitedTransfers, 
                   uint _numOfTransfers, uint _period) 
                   public  nonReentrant returns (uint) {
-        _collection.push(Warranty(msg.sender, _itemSerialNumber, _uri, _soulbound, _unlimitedTransfers, _numOfTransfers, _period, 0));
+        _collection.push(Warranty(msg.sender, _itemSerialNumber, _uri, _unlimitedTransfers, _numOfTransfers, _period, 0));
         uint id = _collection.length.sub(1);
         // console.log("Mint call id: '%d'", id);
         _creatorToWarrantyIds[msg.sender].push(id);
@@ -126,7 +112,6 @@ contract WarrantyNFT is ReentrancyGuard {
             _transfer(_to, _tokenId);
         }
         else if (_warrantyIdToOwner[_tokenId] == msg.sender) {
-            require(!_collection[_tokenId].isSoulbound, "The token is soulbound, cannot transfer!");
             if(_collection[_tokenId].unlimitedTransfers) _transfer(_to, _tokenId);
             else {
                 require(_collection[_tokenId].numOfTransfersAvailable >=1, "Transfers unavailable!");
@@ -137,7 +122,7 @@ contract WarrantyNFT is ReentrancyGuard {
 
     function _transfer(address _to, uint _tokenId) private onlyValidToken(_tokenId) {
         _warrantyIdToOwner[_tokenId] = _to;
-        if(!isApprovedAddress(msg.sender, _tokenId) &&  !(msg.sender == _collection[_tokenId].creator)) {
+        if(!isApprovedAddress(msg.sender, _tokenId) && !(msg.sender == _collection[_tokenId].creator)) {
             _ownerWarrantyCount[msg.sender] = _ownerWarrantyCount[msg.sender].sub(1);
         }
         _ownerWarrantyCount[_to] = _ownerWarrantyCount[_to].add(1);
@@ -178,22 +163,13 @@ contract WarrantyNFT is ReentrancyGuard {
     }
 
     function itemReplace(uint _prevTokenId, string memory _itemSerialNumber, string memory _uri, 
-                         bool _soulbound, bool _unlimitedTransfers, 
+                         bool _unlimitedTransfers, 
                          uint _numOfTransfers, uint _period) onlyCreatorOrApproved(_prevTokenId) external {
 
-        uint id = mint(_itemSerialNumber, _uri, _soulbound, _unlimitedTransfers, _numOfTransfers, _period);
+        uint id = mint(_itemSerialNumber, _uri, _unlimitedTransfers, _numOfTransfers, _period);
         _transfer(_warrantyIdToOwner[_prevTokenId], id);
         _transfer(address(0), _prevTokenId);
         emit ItemReplace(_prevTokenId, id);
-    }
-
-    function mintRetailerWarranty(uint _tokenId, string memory _serialNumber, string memory _uri, 
-                  bool _soulbound, bool _unlimitedTransfers, 
-                  uint _numOfTransfers, uint _period) external onlyApproved(_tokenId) {
-        _warrantyIdToRetailerWarranty[_tokenId] = RetailerWarranty(msg.sender, _serialNumber, _uri, 
-                                                                _soulbound, _unlimitedTransfers, 
-                                                                _numOfTransfers, _period, 0, _tokenId);                                                       
-        _retailerToWarrantyIds[msg.sender].push(_tokenId);
     }
 
 }

@@ -14,7 +14,7 @@ contract("WarrantyNFT", (accounts) => {
     })
 
     it("should create a new Warranty NFT", async () => {
-        const result = await contractInstance.mint("No. 1", "No1.uri.com", false, false , 3 , 300, {from: alice})
+        const result = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 300, {from: alice})
         expect(result.receipt.status).to.equal(true)
     })
 
@@ -23,7 +23,7 @@ contract("WarrantyNFT", (accounts) => {
         let res, id
     
         beforeEach(async () => {
-            res = await contractInstance.mint("No. 1", "No1.uri.com", false, false , 3 , 300, {from: alice})
+            res = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 300, {from: alice})
             id = res.logs[0].args._tokenId
             await contractInstance.approve(bob, id, {from: alice})
         })
@@ -41,28 +41,21 @@ contract("WarrantyNFT", (accounts) => {
     context("successfully transfers the item", () => {
 
         it("should successfully transfer the NFT if no of transfers is greater than 1", async () => {
-            let res = await contractInstance.mint("No. 1", "No1.uri.com", false, false , 3 , 300, {from: alice})
+            let res = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 300, {from: alice})
             let id = res.logs[0].args._tokenId
             await contractInstance.transferTo(bob, id, {from:alice})
             expect(await contractInstance.getOwner(id)).to.equal(bob);
         })
 
         it("should succesfully transfer the NFT if unlimited transfers is true ", async () => {
-            let res = await contractInstance.mint("No. 1", "No1.uri.com", false, true, 0, 300, {from: alice})
+            let res = await contractInstance.mint("No. 1", "No1.uri.com", true, 0, 300, {from: alice})
             let id = res.logs[0].args._tokenId
             await contractInstance.transferTo(bob, id, {from:alice})
             expect(await contractInstance.getOwner(id)).to.equal(bob); 
         })
 
-        it("should throw if the NFT is soulBound and the caller is not the creator, i.e, the customer" , async () => {
-            let res = await contractInstance.mint("No. 1", "No1.uri.com", true, false, 0 , 300, {from: alice})
-            let id = res.logs[0].args._tokenId
-            await contractInstance.transferTo(bob, id)
-            await utils.shouldThrow(contractInstance.transferTo(jose, id, {from: bob}))
-        })
-
-        it("should transfer if caller is the creator/approved regardless of above 3 conditions", async () => {
-            let res = await contractInstance.mint("No. 1", "No1.uri.com", true, false, 0 , 300, {from: alice})
+        it("should transfer if caller is the creator/approved regardless of above 2 conditions", async () => {
+            let res = await contractInstance.mint("No. 1", "No1.uri.com", false, 0 , 300, {from: alice})
             let id = res.logs[0].args._tokenId
             let creatorTransferResult = await contractInstance.transferTo(bob, id, {from:alice})
             expect(creatorTransferResult.receipt.status).to.equal(true)
@@ -78,17 +71,17 @@ contract("WarrantyNFT", (accounts) => {
         let res, id
 
         beforeEach(async () => {
-            res = await contractInstance.mint("No. 1", "No1.uri.com", false, false , 3 , 300, {from: alice})
+            res = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 300, {from: alice})
             id = res.logs[0].args._tokenId
         })
         
         it("should successfully replace if the caller is a valid one", async () => {
-            const replaceResult = await contractInstance.itemReplace(id, "Replaced No. 1", "Replaced No1.uri.com", false, false , 3 , 300, {from: alice})
+            const replaceResult = await contractInstance.itemReplace(id, "Replaced No. 1", "Replaced No1.uri.com", false , 3 , 300, {from: alice})
             expect(replaceResult.receipt.status).to.equal(true)
         })
 
         it("should throw if the caller is not a valid one", async () => {
-            await utils.shouldThrow(contractInstance.itemReplace(id, "Replaced No. 1", "Replaced No1.uri.com", false, false , 3 , 300, {from: bob}))
+            await utils.shouldThrow(contractInstance.itemReplace(id, "Replaced No. 1", "Replaced No1.uri.com", false , 3 , 300, {from: bob}))
         })
         
     })
@@ -98,7 +91,7 @@ contract("WarrantyNFT", (accounts) => {
         let res, id
 
         beforeEach(async () => {
-            res = await contractInstance.mint("No. 1", "No1.uri.com", false, false , 3 , 1, {from: alice})
+            res = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 1, {from: alice})
             id = res.logs[0].args._tokenId
             await contractInstance.transferTo(bob, id, {from: alice})
         })
