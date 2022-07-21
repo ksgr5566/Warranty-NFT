@@ -1,33 +1,33 @@
 import { downloadFile, uploadFile, deleteFile } from '../../utils/file-ops'
-import { getTx } from '../../utils/contract'
+import { getTx, getNonce } from '../../utils/contract'
 
 export default async function handler (req, res) {
     if(req.method === "POST") {
-        if(req.query.method === "mint") {
-            const dataArray = req.body
-            const txParams = []
-            const promise = new Promise((resolve, reject) => {
-                let i = 0
-                dataArray.forEach(async (dataObject) => {
-                    i++;
+        const operation = req.query.operation
+        const dataArray = req.body
+        const txParams = []
+        const keyMap = {}
+        const promise = new Promise((resolve, reject) => {
+            dataArray.forEach(async (dataObject) => {
+                /*
+                const { url } = dataObject
+                const uuid = await downloadFile(url)
+                const newUrl = await uploadFile(uuid)
+                deleteFile(uuid)
 
-                    const { url } = dataObject
-                    const uuid = await downloadFile(url)
-                    const newUrl = await uploadFile(uuid)
-                    deleteFile(uuid)
+                dataObject.url = newUrl
+                */
 
-                    dataObject.url = newUrl
-                    const tx = await getTx(dataObject)
-                    txParams.push(tx)
-
-                    if ( i == dataArray.length ) resolve()
-                })
+                const { publicKey } = dataObject
+                const nonce = await getNonce(publicKey)
+                const tx = await getTx(dataObject, operation, nonce + (keyMap[publicKey] === undefined ? 0 : keyMap[publicKey]))
+                txParams.push(tx)
+                keyMap[publicKey] = (keyMap[publicKey] === undefined ? 1 : keyMap[publicKey]+1)
+                if (txParams.length === dataArray.length) resolve()
             })
-
-            await promise
-            res.status(200).json(txParams)
-        } else if(req.query.method === "transfer") {
-
-        }
+        })           
+        
+        await promise
+        res.status(200).json(txParams)
     }
 }
