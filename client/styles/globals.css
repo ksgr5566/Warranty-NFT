@@ -7,3 +7,21 @@
         @apply bg-[#06202A] text-gray-300;
     }
 }
+
+@layer utilities {
+    .scrollbar {
+        &::-webkit-scrollbar {
+            width: 4px;
+            height: 10px;
+        }
+        &::-webkit-scrollbar-track {
+            margin: 0 6px;
+            border-radius: 10px;
+            background: #555;
+        }
+        &::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: #777;
+        }
+    }
+}
