@@ -91,10 +91,12 @@ function MyApp({ Component, pageProps }) {
   }
 
   return (
+    <>
     <div className="bg-gradient-to-r from-yellow-500 to-slate-500 opacity-4 bg-transparent">
       <Navbar account={account} loginStatus={loginStatus} onClick={handleLogin} />
+      </div>
       <Component {...pageProps} />
-    </div>
+    </>
   )
 }
 

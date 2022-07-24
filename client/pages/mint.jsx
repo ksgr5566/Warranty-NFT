@@ -25,6 +25,9 @@ function mint() {
                     <div key={index}>
                         <p>{form.itemNumber}</p>
                         <p>{form.url}</p>
+                        <p>{form.unlimitedTransfers}</p>
+                        <p>{form.transfers}</p>
+                        <p>{form.period}</p>
                         <button onClick={() => deleteForm(form.id)}>Delete</button>
                     </div>
                 )
