@@ -1,10 +1,7 @@
+import { abiFile, contractAddress } from "./config"
+
 const Web3 = require("web3")
-const abiFile = require("../../artifacts/contracts/WarrantyNFT.sol/WarrantyNFT.json")
-
 const web3 = new Web3(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_TESTNET_API_KEY}`)
-
-const contractAddress = "0x844f3Ed643f4d4e8466550f04Ac56e1D4D2a088e"
-
 const contract = new web3.eth.Contract(abiFile.abi, contractAddress)
 
 function getNonce (publicKey) {

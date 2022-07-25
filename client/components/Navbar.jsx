@@ -3,11 +3,14 @@ import MetaFox from "./svgs/MetaFox"
 import Search1 from "./svgs/Search1"
 import Search2 from "./svgs/Search2"
 import Warranty from "./svgs/Warranty"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
+import { LoginContext } from "../contexts/LoginContext"
 
-function Navbar({ account, loginStatus, onClick }) {
+function Navbar() {
 
   const [activeLink, setActiveLink] = useState("")
+
+  const { account, loginStatus, handleLogin } = useContext(LoginContext)
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -61,7 +64,7 @@ function Navbar({ account, loginStatus, onClick }) {
           </button>
         </form>
         <button
-          type="button" onClick={onClick}
+          type="button" onClick={handleLogin}
           className="text-gray-900 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-full sm:rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mx-6 my-8 sm:my-10 md:order-2"
         >
           <span className="sm:hidden">
