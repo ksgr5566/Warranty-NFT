@@ -34,7 +34,7 @@ function CreateMintForm({ onAdd }) {
   }
 
   return (
-    <div className="sm:mx-20 mx-2 py-6">
+    <div className="sm:mx-20 mx-2 py-1">
       <div className="sm:mx-auto mt-6 select-none">
         <h1 className="text-center font-bold font-mono mb-4">
           Fill Warranty Details
