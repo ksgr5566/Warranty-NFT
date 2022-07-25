@@ -19,7 +19,7 @@ function Navbar({ account, loginStatus, onClick }) {
         setActiveLink(window.location.pathname)
       })
     }
-  }, []);
+  }, [])
 
   function onNavClick(path) {
     setActiveLink(path)
@@ -28,9 +28,9 @@ function Navbar({ account, loginStatus, onClick }) {
   return (
     <>
       <div className="flex justify-between flex-wrap select-none">
-        <div className="p-6">
+        <div className="p-6 mt-2">
           <Link href="/">
-            <a>
+            <a onClick={e => onNavClick("/")}>
               <Warranty />
               <span className="font-bold">WarNT</span>
             </a>
