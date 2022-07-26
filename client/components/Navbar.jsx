@@ -5,6 +5,7 @@ import Search2 from "./svgs/Search2"
 import Warranty from "./svgs/Warranty"
 import { useState, useEffect, useContext } from "react"
 import { LoginContext } from "../contexts/LoginContext"
+import Router from 'next/router'
 
 function Navbar() {
 
@@ -20,6 +21,9 @@ function Navbar() {
       })
       window.addEventListener('popstate', function (event) {
         setActiveLink(window.location.pathname)
+      })
+      Router.events.on('routeChangeStart', (url, { shallow }) => {
+        setActiveLink(url)
       })
     }
   }, [])
@@ -77,7 +81,7 @@ function Navbar() {
           {!loginStatus ? "Connect with MetaMask" : account.slice(0,19) + "..."}
           </span>
           <span className="sm:hidden">
-          {loginStatus && account.slice(0,4) + "..."}
+          {loginStatus ? account.slice(0,4) + "..." : ""}
           </span>
         </button>
       </div>

@@ -2,11 +2,11 @@ import { useState } from "react"
 
 function CreateMintForm({ onAdd }) {
   const [form, setForm] = useState({
-    itemNumber: "",
-    url: "",
+    itemSerialNumber: "",
+    uri: "",
     unlimitedTransfers: false,
-    transfers: "",
-    period: "",
+    numOfTransfers: "",
+    period: ""
   })
 
   function handleChange(event) {
@@ -24,11 +24,11 @@ function CreateMintForm({ onAdd }) {
   function addForm(event) {
     onAdd(form)
     setForm({
-      itemNumber: "",
-      url: "",
+      itemSerialNumber: "",
+      uri: "",
       unlimitedTransfers: false,
-      transfers: "",
-      period: "",
+      numOfTransfers: "",
+      period: ""
     })
     event.preventDefault();
   }
@@ -48,8 +48,8 @@ function CreateMintForm({ onAdd }) {
               <input
                 id="itemNumber"
                 type="text"
-                name="itemNumber"
-                value={form.itemNumber}
+                name="itemSerialNumber"
+                value={form.itemSerialNumber}
                 placeholder="Item Number"
                 onChange={handleChange}
                 className="sm:col-span-3 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-slate-200"
@@ -59,9 +59,9 @@ function CreateMintForm({ onAdd }) {
               </label>
               <input
                 type="url"
-                name="url"
+                name="uri"
                 id="url"
-                value={form.url}
+                value={form.uri}
                 placeholder="URL"
                 onChange={handleChange}
                 className="sm:col-span-3 border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-slate-200"
@@ -88,9 +88,9 @@ function CreateMintForm({ onAdd }) {
                   </label>
                   <input
                     type="number"
-                    name="transfers"
+                    name="numOfTransfers"
                     id="transfers"
-                    value={form.transfers}
+                    value={form.numOfTransfers}
                     placeholder="Number of Transfers"
                     onChange={handleChange}
                     className="border text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-slate-200 max-w-full"

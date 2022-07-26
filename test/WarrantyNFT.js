@@ -13,9 +13,45 @@ contract("WarrantyNFT", (accounts) => {
         contractInstance = await WarrantyNFT.new()
     })
 
-    it("should create a new Warranty NFT", async () => {
-        const result = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 300, {from: alice})
-        expect(result.receipt.status).to.equal(true)
+    context("successfully mints", () => {
+
+        it("should create single Warranty NFT", async () => {
+            const result = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 300, {from: alice})
+            expect(result.receipt.status).to.equal(true)
+        })
+
+        it("should create multiple nfts in a single transaction", async () => {
+            const dataObject = [
+                {
+                    itemSerialNumber: "No. 1",
+                    uri: "No1.uri.com",
+                    unlimitedTransfers: false,
+                    numOfTransfers: 3,
+                    period: 350
+                },
+                {
+                    itemSerialNumber: "No. 2",
+                    uri: "No2.uri.com",
+                    unlimitedTransfers: false,
+                    numOfTransfers: 3,
+                    period: 350
+                },
+                {
+                    itemSerialNumber: "No. 3",
+                    uri: "No3.uri.com",
+                    unlimitedTransfers: false,
+                    numOfTransfers: 3,
+                    period: 350
+                }
+            ]
+            const result = await contractInstance.multipleMint(dataObject, {from: alice})
+            expect(result.receipt.status).to.equal(true)
+
+            // console.log("Test starts")
+            // const x = await contractInstance.idToWarranty(4, {from: alice})
+            // console.log(x)
+        })
+
     })
 
     context("approves the transfer of the item", () => {
@@ -44,14 +80,14 @@ contract("WarrantyNFT", (accounts) => {
             let res = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 300, {from: alice})
             let id = res.logs[0].args._tokenId
             await contractInstance.transferTo(bob, id, {from:alice})
-            expect(await contractInstance.getOwner(id)).to.equal(bob);
+            expect(await contractInstance.warrantyIdToOwner(id)).to.equal(bob);
         })
 
         it("should succesfully transfer the NFT if unlimited transfers is true ", async () => {
             let res = await contractInstance.mint("No. 1", "No1.uri.com", true, 0, 300, {from: alice})
             let id = res.logs[0].args._tokenId
             await contractInstance.transferTo(bob, id, {from:alice})
-            expect(await contractInstance.getOwner(id)).to.equal(bob); 
+            expect(await contractInstance.warrantyIdToOwner(id)).to.equal(bob); 
         })
 
         it("should transfer if caller is the creator/approved regardless of above 2 conditions", async () => {
@@ -81,7 +117,7 @@ contract("WarrantyNFT", (accounts) => {
         })
 
         it("should throw if the caller is not a valid one", async () => {
-            await utils.shouldThrow(contractInstance.itemReplace(id, "Replaced No. 1", "Replaced No1.uri.com", false , 3 , 300, {from: bob}))
+            await utils.shouldThrow(contractInstance.itemReplace(id, "Replaced No. 1", "Replaced No1.uri.com", false , 3 , 300, {from: bob}))   
         })
         
     })
@@ -104,9 +140,11 @@ contract("WarrantyNFT", (accounts) => {
             await time.increase(time.duration.days(1));
             const decayResult = await contractInstance.decayWarranty(id, {from: alice})
             expect(decayResult.receipt.status).to.equal(true)
-            expect(await contractInstance.getOwner(id)).to.not.equal(bob)
+            expect(await contractInstance.warrantyIdToOwner(id)).to.not.equal(bob)
         })
 
     })
+
+    
 
 })

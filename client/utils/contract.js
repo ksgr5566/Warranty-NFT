@@ -1,8 +1,4 @@
-import { abiFile, contractAddress } from "./config"
-
-const Web3 = require("web3")
-const web3 = new Web3(`https://polygon-mumbai.g.alchemy.com/v2/${process.env.ALCHEMY_TESTNET_API_KEY}`)
-const contract = new web3.eth.Contract(abiFile.abi, contractAddress)
+import { web3, contract } from "./config"
 
 function getNonce (publicKey) {
     return new Promise ((resolve, reject) => {
