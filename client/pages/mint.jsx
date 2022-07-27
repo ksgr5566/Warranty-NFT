@@ -3,7 +3,7 @@ import { LoginContext } from "../contexts/LoginContext"
 
 import CreateMintForm from "../components/CreateMintForm"
 import MintCard from "../components/MintCard"
-import Loading from "../components/svgs/Loading"
+import Loading from "../components/Loading"
 
 import Web3Modal from "web3modal"
 import Web3 from "web3"
@@ -120,15 +120,7 @@ function Mint() {
           })}
       </div>
 
-      {loading && (
-        <div className="flex justify-center items-center">
-          <div role="status">
-            <Loading />
-            <span class="sr-only">Loading...</span>
-          </div>
-          <p>Your transaction is being processed. Please wait.</p>
-        </div>
-      )}
+      {loading && ( <Loading content="Your transaction is being processed. Please wait." /> )}
 
       {(forms.length !== 0 || receipts.length !== 0) && !loading && (
         <div className="flex justify-center">

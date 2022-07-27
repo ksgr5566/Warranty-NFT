@@ -1,4 +1,4 @@
-import { web3, contract } from "./config"
+import { web3, contract, contractAddress } from "./config"
 
 function getNonce (publicKey) {
     return new Promise ((resolve, reject) => {
