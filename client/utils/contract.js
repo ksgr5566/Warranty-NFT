@@ -1,5 +1,7 @@
-import { web3, contract, contractAddress } from "./config"
+import { web3, contract, contractAddress, abiFile } from "./config"
 
+const parseReceiptEvents = require('web3-parse-receipt-events')
+ 
 function getNonce (publicKey) {
     return new Promise ((resolve, reject) => {
         web3.eth.getTransactionCount(publicKey, "latest").then(nonce => resolve(nonce))
@@ -55,7 +57,30 @@ async function getTx (dataObject, operation, publicKey) {
 }
 
 async function send (signature) {
-    return await web3.eth.sendSignedTransaction(signature).on("receipt", receipt => receipt)
+  
+    const receipt = await web3.eth.sendSignedTransaction(signature).on("receipt", receipt => receipt)
+    web3.eth.getTransactionReceipt(receipt.transactionHash)
+    .then(receipt => parseReceiptEvents(abiFile.abi, contractAddress, receipt))
+    .then((a) => {
+        console.log(a.events.ItemRepair.returnValues)
+    })
+//     console.log(x)
+//     console.log(typeof x)
+//     let xe = x.events
+//     console.log(xe) //.ItemRepair.returnValues
+// try{
+//     let xei = xe.ItemRepair
+//     console.log(xei)
+//     console.log(xei.returnValues)
+// } catch (e) {
+//     console.log("Asdfsjgdfhkjahlsdfcnlkajsdnlvcm")
+// }
+    
+    // let x = await web3.eth.getTransactionReceipt(receipt.transactionHash)
+    // const logs = await contract.events.itemRepair().processReceipt(x)
+    // console.log(logs)
+
+    return receipt
 }
 
 function getEvent (blockNum, from) {

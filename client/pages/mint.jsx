@@ -69,6 +69,7 @@ function Mint() {
       maxFeePerGas: null,
       gasLimit: web3.utils.toHex(1000000),
     })
+    console.log(receipt)
     let tokens = []
 
     function getId(index) {

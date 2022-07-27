@@ -27,7 +27,9 @@
     "dotenv": "^16.0.1",
     "formidable": "^2.0.1",
     "fs": "^0.0.1-security",
+    "moralis": "^1.10.1",
     "path": "^0.12.7",
+    "web3-parse-receipt-events": "^1.0.2",
     "web3.storage": "^4.3.0"
   }
 }

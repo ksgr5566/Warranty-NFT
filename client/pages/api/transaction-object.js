@@ -33,6 +33,7 @@ export default async function handler(req, res) {
           res
             .status(200)
             .json({ txParams: txParams, errorObjects: errorObjects });
+            return
         }
         case "repair": {
           const obj = {
@@ -41,11 +42,10 @@ export default async function handler(req, res) {
           }
 
           const uri = await uploadObject(obj);
-          console.log(uri)
-          
           const dataObject = { id: data.id, uri: uri };
           txParams = await getTx(dataObject, operation, publicKey);
           res.status(200).json({ txParams: txParams });
+          return
         }
       }
 
