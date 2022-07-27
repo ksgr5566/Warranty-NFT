@@ -89,7 +89,7 @@ function Mint() {
   return (
     <>
       <CreateMintForm onAdd={addForm} />
-      <div className="bg-grey grid sm:grid-cols-3 md:grid-cols-4  grid-cols-1 mx-4 my-4 gap-x-4 gap-y-4">
+      <div className="bg-grey grid sm:grid-cols-2 md:grid-cols-3  grid-cols-1 mx-4 my-4 gap-x-4 gap-y-4">
         {status &&
           !loading &&
           forms.map((form, index) => {

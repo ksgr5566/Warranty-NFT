@@ -12,7 +12,7 @@ function CreateMintForm({ onAdd }) {
   function handleChange(event) {
     const { name, value } = event.target
     let x = value
-    if ((name === "transfers" || name === "period") && value < 0) x = ""
+    if ((name === "numOfTransfers" || name === "period") && value < 0) x = ""
     setForm((prevState) => {
       return {
         ...prevState,

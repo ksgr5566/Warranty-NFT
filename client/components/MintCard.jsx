@@ -5,14 +5,14 @@ function MintCard(props) {
 
   return (
     <>
-      <div className="block p-6 max-w-sm rounded-lg border shadow-md bg-gray-800 border-gray-700 hover:bg-black">
+      <div className="block p-6 max-w-sm rounded-lg border shadow-md bg-gray-800 border-gray-700 hover:bg-black overflow-x-auto">
         <div className="px-6 py-1">
           <h1 className="font-bold wx-4">
             {typeof props.status !== "undefined" ? "Receipt" : "Request"} #
             {props.id + 1}
           </h1>
         </div>
-        <div className="px-6 py-1">
+        <div className="bet:px-6 py-1 px-0">
           <p className="font-serif text-gray-400">
             ItemNumber: {props.itemNumber}
           </p>

@@ -97,18 +97,18 @@ function Navbar() {
               {activeLink === "/mint" ? (<span className="font-bold text-slate-300">Mint</span>) : "Mint"}
             </a>
           </Link>
-          <Link href="/">
-            <a className="rounded-lg px-3 py-2 border-solid hover:bg-slate-800 border-indigo-600" onClick={onNavClick}>
+          <Link href="/transfer">
+            <a className="rounded-lg px-3 py-2 border-solid hover:bg-slate-800 border-indigo-600" onClick={e => onNavClick("/transfer")}>
               {activeLink === "/transfer" ? (<span className="font-bold text-slate-300">Transfer</span>) : "Transfer"}
             </a>
           </Link>
-          <Link href="/">
-            <a className="rounded-lg px-3 py-2 border-solid hover:bg-slate-800 border-indigo-600" onClick={onNavClick}>
+          <Link href="/approve">
+            <a className="rounded-lg px-3 py-2 border-solid hover:bg-slate-800 border-indigo-600" onClick={e => onNavClick("/approve")}>
               {activeLink === "/approve" ? (<span className="font-bold text-slate-300">Approve</span>) : "Approve"}
             </a>
           </Link>
-          <Link href="/">
-            <a className="rounded-lg px-3 py-2 border-solid hover:bg-slate-800 border-indigo-600" onClick={onNavClick}>
+          <Link href="/decay">
+            <a className="rounded-lg px-3 py-2 border-solid hover:bg-slate-800 border-indigo-600" onClick={e => onNavClick("/decay")}>
               {activeLink === "/decay" ? (<span className="font-bold text-slate-300">Decay</span>) : "Decay"}
             </a>
           </Link>
