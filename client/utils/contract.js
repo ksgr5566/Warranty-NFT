@@ -6,16 +6,41 @@ function getNonce (publicKey) {
     })
 }
 
-async function getTx (dataObject, operation, nonce) {
-    console.log(nonce)
+async function getTx (dataObject, operation, publicKey) {
+    const nonce = await getNonce(publicKey)
     let data
-    if (operation === "mint") {
-        const { itemSerialNumber, url, unlimitedTransfers, numOfTransfers, period } = dataObject
-        data = contract.methods.mint(itemSerialNumber, url, unlimitedTransfers, numOfTransfers, period).encodeABI()
-    } else if (operation === "transfer") {
-        const { address, id } = dataObject
-        data = contract.methods.transferTo(address, id).encodeABI()
+    switch (operation) {
+        case "mint": {
+            data = contract.methods.multipleMint(dataObject).encodeABI()
+            break
+        }
+        case "transfer": {
+            const { address, id } = dataObject
+            data = contract.methods.transferTo(address, id).encodeABI()
+            break
+        }
+        case "approve": {
+            const { address, id } = dataObject
+            data = contract.methods.approve(address, id).encodeABI()
+            break
+        }
+        case "repair": {
+            const { id, uri } = dataObject
+            data = contract.methods.itemRepair(id, uri).encodeABI()
+            break
+        }
+        case "replace": {
+
+        }
+        case "decay": {
+
+        }
+        default: {
+            throw "Invalid operation"
+            return
+        }
     }
+  
     const tx = {
         gasPrice: web3.utils.toHex(web3.utils.toWei("50", "gwei")), //160
         gasLimit: web3.utils.toHex(1000000), // minus one zero

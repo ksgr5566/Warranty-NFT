@@ -29,7 +29,7 @@ export default async function handler (req, res) {
                     console.log(error)
                     reject()
                 }
-                if ( receiptArray.length === dataArray.length ) resolve()
+                if (receiptArray.length === dataArray.length) resolve()
             })
         })
         await promise

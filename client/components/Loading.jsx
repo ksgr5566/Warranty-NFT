@@ -5,7 +5,7 @@ function Loading({content}) {
     <div className="flex justify-center items-center">
           <div role="status">
             <LoadingSvg />
-            <span class="sr-only">Loading...</span>
+            <span className="sr-only">Loading...</span>
           </div>
           <p>{content}</p>
     </div>

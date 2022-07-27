@@ -1,5 +1,6 @@
 import { useState } from "react"
-function TransferForm(){
+
+function TransferForm({ onSubmit, buttonStatus }){
   const[form , setForm] = useState({
     to: "",
     tokenId: "",
@@ -15,7 +16,18 @@ function TransferForm(){
           [name]: x
         }
     })
-}
+  }
+
+  function handleSubmit(e) {
+    onSubmit(form)
+    setForm({
+      to: "",
+      tokenId: "",
+      mobileNumber:""
+    })
+    e.preventDefault()
+  }
+
 return(
 
     <div className="sm:mx-20 mx-2 py-1 my-" >
@@ -69,14 +81,16 @@ return(
             </div>
             </div>
             <div className="flex justify-center">
-          <button
+          {buttonStatus && (
+            <button
             className="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white text-white focus:ring-4 focus:outline-none focus:ring-cyan-800"
-           
+            type="submit" onClick={handleSubmit}
           >
             <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-gray-900 rounded-md group-hover:bg-opacity-0">
               Transfer
             </span>
           </button>
+          )}
         </div>
         </form>
      </div>
