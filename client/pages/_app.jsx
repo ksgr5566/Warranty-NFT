@@ -1,6 +1,7 @@
 import '../styles/globals.css'
 import Head from 'next/head'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { LoginProvider } from '../contexts/LoginContext'
 
 function MyApp({ Component, pageProps }) {
@@ -17,6 +18,9 @@ function MyApp({ Component, pageProps }) {
         <Navbar />
       </div>
       <Component {...pageProps} />
+      <div className="bg-gradient-to-r from-slate-500 to-gray-400 opacity-4 bg-transparent">
+        <Footer />
+      </div>
     </LoginProvider>
     </>
   )

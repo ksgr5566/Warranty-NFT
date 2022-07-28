@@ -10,6 +10,7 @@ import Router from 'next/router'
 function Navbar() {
 
   const [activeLink, setActiveLink] = useState("")
+  const [searchContent, setSearchContent] = useState("")
 
   const { account, loginStatus, handleLogin } = useContext(LoginContext)
 
@@ -30,6 +31,19 @@ function Navbar() {
 
   function onNavClick(path) {
     setActiveLink(path)
+  }
+
+  function handleChange(event) {
+    const { value } = event.target
+    setSearchContent(value)
+  }
+
+  function submit (e) {
+    Router.push({
+      pathname: `/${searchContent}`,
+    })
+    setSearchContent("")
+    e.preventDefault()
   }
 
   return (
@@ -54,6 +68,8 @@ function Navbar() {
             <input
               type="text"
               id="simple-search"
+              onChange={handleChange}
+              value={searchContent}
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block pl-10 p-2.5 sm:w-96 xs:w-72 2xs:w-60 w-full"
               placeholder="0x.../tokenId"
               required
@@ -61,6 +77,7 @@ function Navbar() {
           </div>
           <button
             type="submit"
+            onClick={submit}
             className="hidden sm:inline p-2.5 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
           >
             <Search2 />

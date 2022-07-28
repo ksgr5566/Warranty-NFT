@@ -1,4 +1,4 @@
-import { web3, contract } from '../../utils/config'
+import { contract } from '../../utils/config'
 
 export default async function handler (req, res) {
     const address =  req.query.address

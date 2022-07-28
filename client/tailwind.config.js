@@ -12,7 +12,7 @@ module.exports = {
       'sm': '460px',
       'bet': '600px',
       'md': '839px',
-      'lg': '1024px'
+      'lg': '1100px'
     }
   },
   plugins: [],

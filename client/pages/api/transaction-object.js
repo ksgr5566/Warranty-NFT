@@ -21,6 +21,7 @@ export default async function handler(req, res) {
                 const newUrl = await uploadFile(uuid);
                 deleteFile(uuid);
                 dataObject.uri = newUrl;
+                console.log(dataObject)
                 dataArray.push(dataObject);
               } catch (e) {
                 errorObjects.push(dataObject);
@@ -29,6 +30,7 @@ export default async function handler(req, res) {
             });
           });
           await promise;
+          console.log(dataArray)
           txParams = await getTx(dataArray, operation, publicKey);
           res.status(200).json({ txParams: txParams, errorObjects: errorObjects });
           return
