@@ -23,6 +23,7 @@ contract WarrantyNFT {
 
     struct Warranty {
         address creator;
+        address currentOwner;
         string itemSerialNumber;
         string uri;
         bool unlimitedTransfers;
@@ -32,10 +33,17 @@ contract WarrantyNFT {
     }
    
     mapping (uint => Warranty) public idToWarranty;
-    mapping (uint => address) public warrantyIdToOwner;
-    mapping (address => uint) public ownerWarrantyCount;
-    mapping (address => uint[]) public creatorToWarrantyIds;
-    mapping (uint => address) public warrantyIdToApprovedAddress;
+    mapping (address => uint[]) public ownerToIds;
+    mapping (address => uint[]) public creatorToIds;
+    mapping (uint => address) public idToApproved;
+
+    function getOwnerIds(address _owner) external view returns (uint[] memory) {
+        return ownerToIds[_owner];
+    }
+
+    function getCreatorIds(address _creator) external view returns (uint[] memory) {
+        return creatorToIds[_creator];
+    }
 
     modifier onlyCreator (uint _tokenId) {
         require(msg.sender == idToWarranty[_tokenId].creator,
@@ -44,7 +52,7 @@ contract WarrantyNFT {
     }
 
     modifier onlyApproved(uint _tokenId) {
-        require(msg.sender == warrantyIdToApprovedAddress[_tokenId], 
+        require(msg.sender == idToApproved[_tokenId], 
                 "Sender is not an approved retailer!");
         _;
     }
@@ -61,7 +69,7 @@ contract WarrantyNFT {
     }
 
     function isApprovedAddress(address _address, uint _tokenId) public view returns (bool) {
-        return _address == warrantyIdToApprovedAddress[_tokenId];
+        return _address == idToApproved[_tokenId];
         
     }
 
@@ -84,9 +92,8 @@ contract WarrantyNFT {
 
         _tokenIds.increment();
         uint id = _tokenIds.current();
-
-        idToWarranty[id] = Warranty(msg.sender, _itemSerialNumber, _uri, _unlimitedTransfers, _numOfTransfers, _period, 0);
-        creatorToWarrantyIds[msg.sender].push(id);
+        idToWarranty[id] = Warranty(msg.sender, address(0), _itemSerialNumber, _uri, _unlimitedTransfers, _numOfTransfers, _period, 0);
+        creatorToIds[msg.sender].push(id);
         emit Transfer(address(0), msg.sender, id);
         return id;
     }
@@ -105,31 +112,39 @@ contract WarrantyNFT {
         }
     }
 
-    function transferTo(address _to, uint _tokenId) external {
+    function transferTo(address _to, uint _tokenId) public {
         if (msg.sender == idToWarranty[_tokenId].creator || isApprovedAddress(msg.sender, _tokenId)) {
+            require(idToWarranty[_tokenId].currentOwner == address(0), "Token is already owned!");
             idToWarranty[_tokenId].timestamp = block.timestamp;
             _transfer(_to, _tokenId);
         }
-        else if (warrantyIdToOwner[_tokenId] == msg.sender) {
+        else if (idToWarranty[_tokenId].currentOwner == msg.sender) {
             if(idToWarranty[_tokenId].unlimitedTransfers) _transfer(_to, _tokenId);
             else {
                 require(idToWarranty[_tokenId].numOfTransfersAvailable >=1, "Transfers unavailable!");
                 idToWarranty[_tokenId].numOfTransfersAvailable = idToWarranty[_tokenId].numOfTransfersAvailable.sub(1);
+                _transfer(_to, _tokenId);
             }
         }
     }
 
     function _transfer(address _to, uint _tokenId) private onlyValidToken(_tokenId) {
-        warrantyIdToOwner[_tokenId] = _to;
+        idToWarranty[_tokenId].currentOwner = _to;
         if(!isApprovedAddress(msg.sender, _tokenId) && !(msg.sender == idToWarranty[_tokenId].creator)) {
-            ownerWarrantyCount[msg.sender] = ownerWarrantyCount[msg.sender].sub(1);
+            for (uint i=0; i < ownerToIds[msg.sender].length; i++) {
+                if (ownerToIds[msg.sender][i] == _tokenId) {
+                    ownerToIds[msg.sender][i] = ownerToIds[msg.sender][ownerToIds[msg.sender].length - 1];
+                    ownerToIds[msg.sender].pop();
+                    break;
+                }
+            }
         }
-        ownerWarrantyCount[_to] = ownerWarrantyCount[_to].add(1);
+        ownerToIds[_to].push(_tokenId);
         emit Transfer(msg.sender, _to, _tokenId);
     }
 
     function approve(address _approved, uint256 _tokenId) external onlyCreator(_tokenId) {
-        warrantyIdToApprovedAddress[_tokenId] = _approved;
+        idToApproved[_tokenId] = _approved;
         emit Approval(msg.sender, _approved, _tokenId);
     }
 
@@ -142,29 +157,27 @@ contract WarrantyNFT {
     }
 
     function isValidWarranty(uint _tokenId) public view onlyValidToken(_tokenId) returns (bool) {
-        if (warrantyIdToOwner[_tokenId] == address(0) || 
+        if (idToWarranty[_tokenId].currentOwner == address(0) || 
             (idToWarranty[_tokenId].timestamp.add(idToWarranty[_tokenId].period.mul(1 days)) > block.timestamp)
            ) return true;
         return false;
     }
 
-    function decayWarranty(uint _tokenId) public onlyValidToken(_tokenId) onlyCreatorOrApproved(_tokenId) {
+    function decay(uint _tokenId) external onlyValidToken(_tokenId) onlyCreatorOrApproved(_tokenId) {
         require(!isValidWarranty(_tokenId));
-        _transfer(address(0), _tokenId);
+        delete idToWarranty[_tokenId];
+        delete idToApproved[_tokenId];
     }
 
     function itemRepair(uint _tokenId, string calldata _uri) external onlyCreatorOrApproved(_tokenId) {
         emit ItemRepair(_tokenId, _uri);
     }
 
-    function itemReplace(uint _prevTokenId, string calldata _itemSerialNumber, string calldata _uri, 
-                         bool _unlimitedTransfers, 
-                         uint _numOfTransfers, uint _period) onlyCreatorOrApproved(_prevTokenId) external {
-
-        uint id = mint(_itemSerialNumber, _uri, _unlimitedTransfers, _numOfTransfers, _period);
-        _transfer(warrantyIdToOwner[_prevTokenId], id);
-        _transfer(address(0), _prevTokenId);
-        emit ItemReplace(_prevTokenId, id);
+    function itemReplace(uint _prevId, uint _newId) onlyCreatorOrApproved(_prevId) onlyCreatorOrApproved(_newId) external {
+        transferTo(idToWarranty[_prevId].currentOwner, _newId);
+        delete idToWarranty[_prevId];
+        delete idToApproved[_prevId];
+        emit ItemReplace(_prevId, _newId);
     }
 
 }

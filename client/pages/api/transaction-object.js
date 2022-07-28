@@ -1,5 +1,5 @@
 import { downloadFile, uploadFile, deleteFile } from "../../utils/file-ops";
-import { getTx, getNonce } from "../../utils/contract";
+import { getTx } from "../../utils/contract";
 import { uploadObject } from "../../utils/ipfsUpload";
 
 export default async function handler(req, res) {
@@ -20,27 +20,24 @@ export default async function handler(req, res) {
                 const uuid = await downloadFile(uri);
                 const newUrl = await uploadFile(uuid);
                 deleteFile(uuid);
+                dataObject.uri = newUrl;
                 dataArray.push(dataObject);
-                dataArray.uri = newUrl;
               } catch (e) {
                 errorObjects.push(dataObject);
               }
-              if (index === data.length) resolve();
+              if (index === data.length - 1) resolve();
             });
           });
           await promise;
           txParams = await getTx(dataArray, operation, publicKey);
-          res
-            .status(200)
-            .json({ txParams: txParams, errorObjects: errorObjects });
-            return
+          res.status(200).json({ txParams: txParams, errorObjects: errorObjects });
+          return
         }
         case "repair": {
           const obj = {
             title: data.title,
             content: data.content
           }
-
           const uri = await uploadObject(obj);
           const dataObject = { id: data.id, uri: uri };
           txParams = await getTx(dataObject, operation, publicKey);
@@ -48,7 +45,6 @@ export default async function handler(req, res) {
           return
         }
       }
-
       txParams = await getTx(data, operation, publicKey);
       res.status(200).json({ txParams: txParams });
     } catch (e) {

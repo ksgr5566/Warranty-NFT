@@ -32,14 +32,17 @@ async function getTx (dataObject, operation, publicKey) {
             break
         }
         case "replace": {
-
+            const { prevId, newId } = dataObject
+            data = contract.methods.itemReplace(prevId, newId).encodeABI()
+            break
         }
         case "decay": {
-
+            const { id } = dataObject
+            data = contract.methods.decay(id).encodeABI()
+            break
         }
         default: {
             throw "Invalid operation"
-            return
         }
     }
   
@@ -57,43 +60,31 @@ async function getTx (dataObject, operation, publicKey) {
 }
 
 async function send (signature) {
-  
-    const receipt = await web3.eth.sendSignedTransaction(signature).on("receipt", receipt => receipt)
-    web3.eth.getTransactionReceipt(receipt.transactionHash)
-    .then(receipt => parseReceiptEvents(abiFile.abi, contractAddress, receipt))
-    .then((a) => {
-        console.log(a.events.ItemRepair.returnValues)
-    })
-//     console.log(x)
-//     console.log(typeof x)
-//     let xe = x.events
-//     console.log(xe) //.ItemRepair.returnValues
-// try{
-//     let xei = xe.ItemRepair
-//     console.log(xei)
-//     console.log(xei.returnValues)
-// } catch (e) {
-//     console.log("Asdfsjgdfhkjahlsdfcnlkajsdnlvcm")
-// }
-    
-    // let x = await web3.eth.getTransactionReceipt(receipt.transactionHash)
-    // const logs = await contract.events.itemRepair().processReceipt(x)
-    // console.log(logs)
+    const receipt = await web3.eth.sendSignedTransaction(signature).on("receipt", receipt => receipt).on("error", (error) => {error: error})
+    if (receipt.error !== undefined) return {error: receipt.error}
+    const readableReceipt = parseReceiptEvents(abiFile.abi, contractAddress, receipt)
+    const events = readableReceipt.events
+    let returnValues
+    if (events.ItemRepair !== undefined) {
+        returnValues = events.ItemRepair.returnValues
+    } else if (events.Transfer !== undefined && events.ItemReplace === undefined) {
+        if (events.Transfer instanceof Array) {
+            returnValues = []
+            events.Transfer.forEach((transfer) => {
+                returnValues.push(transfer.returnValues)
+            })
+        } else {
+            returnValues = events.Transfer.returnValues
+        }
+    } else if (events.Approve !== undefined) {
+        returnValues = events.Approve.returnValues
+    } else if (events.ItemReplace !== undefined) {
+        returnValues = {}
+        returnValues.ItemReplace = events.ItemReplace.returnValues
+        returnValues.Transfer = events.Transfer.returnValues
+    }
 
-    return receipt
+    return returnValues
 }
 
-function getEvent (blockNum, from) {
-    return new Promise((resolve, reject) => {
-        contract.getPastEvents('Transfer', {
-            filter: { _to: from},
-            fromBlock: blockNum,
-            toBlock: "latest"
-        }, (error, events) => {
-            if (error) reject(error)
-            resolve(events)
-        })
-    })
-}
-
-export { getTx, send, getNonce, getEvent }
+export { getTx, send, getNonce }
