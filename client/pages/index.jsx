@@ -15,9 +15,8 @@ export default function Home() {
         <p className="mb-5 text-base text-gray-500 sm:text-lg ">
           Use our API to perform the above specified functions as well as emit{" "}
           <em>Repair</em> and <em>Replace</em> events, please read the docs{" "}
-          <a className="text-blue-400" href="https://github.com/" target="_blank">here</a>.
+          <a className="text-blue-400" href="https://github.com/" target="_blank" rel="noopener">here</a>.
         </p>
-        <div class="justify-center items-center space-y-4 sm:flex sm:space-y-0 sm:space-x-4"></div>
       </div>
     </div>
   );
