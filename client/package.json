@@ -29,9 +29,11 @@
     "web3modal": "^1.9.8"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.9",
+    "@babel/eslint-parser": "^7.18.9",
     "autoprefixer": "^10.4.7",
     "babel-eslint": "^10.1.0",
-    "eslint": "8.20.0",
+    "eslint": "^8.20.0",
     "eslint-config-next": "12.2.3",
     "postcss": "^8.4.14",
     "postcss-nesting": "^10.1.10",
