@@ -48,7 +48,7 @@ async function getTx (dataObject, operation, publicKey) {
   
     const tx = {
         gasPrice: web3.utils.toHex(web3.utils.toWei("50", "gwei")), //160
-        gasLimit: web3.utils.toHex(1000000), // minus one zero
+        gasLimit: web3.utils.toHex(1000000), 
         to: contractAddress,
         //value: '0x00',
         data: data,
