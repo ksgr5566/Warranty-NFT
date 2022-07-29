@@ -1,16 +1,12 @@
 import fast2sms from "fast-two-sms"
 
+async function sendMessage(phoneNumber, id) {
+  const response = await fast2sms.sendMessage({
+    authorization: process.env.NEXT_PUBLIC_FAST2SMS_API_KEY,
+    message: "You have new token with the id of " + id + " in your wallet!",
+    numbers: [phoneNumber],
+  })
+  console.log(response)
+}
 
-
-// app.post("/sendMessage",async (req,res) =>{
-//     var options = await fast2sms.sendMessage({authorization : process.env.API_KEY , message : req.body.message ,  numbers : [req.body.number]}) 
-//     res.send(options);
-
-// })
-
-  async function sendMessage(phoneNumber){
-    const response = await fast2sms.sendMessage({authorization : apiKey , message : "hello world" ,  numbers : [phoneNumber]}) 
-    console.log(response);
-  }
-
-  export default sendMessage;
+export { sendMessage }

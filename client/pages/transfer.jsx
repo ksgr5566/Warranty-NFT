@@ -22,7 +22,20 @@ function Transfer(){
         setButtonVisibility(false)
         setLoading(true)
         try {
-            await transfer(form)
+            const id = await transfer(form)
+            const data = {
+                phone: form.mobileNumber,
+                id: id
+            }
+            const response = await fetch('/api/message', {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            })
+            const json = await response.json()
+            console.log(json)
         } catch (e) {
             console.log(e)
         } finally {
@@ -31,7 +44,7 @@ function Transfer(){
         }
     }
 
-    async function transfer({to, tokenId, mobileNumber}) {
+    async function transfer({to, tokenId}) {
         const web3Modal = new Web3Modal()
         const connection = await web3Modal.connect()
         const web3 = new Web3(connection)
@@ -43,6 +56,7 @@ function Transfer(){
             gasLimit: web3.utils.toHex(1000000),
         })
         console.log(receipt)
+        return receipt.events.Transfer.returnValues._tokenId
     }
 
     return(<>

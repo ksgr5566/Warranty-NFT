@@ -19,7 +19,7 @@ function MyApp({ Component, pageProps }) {
             <Navbar />
           </div>
           <Component {...pageProps} />
-          <div className="bg-gradient-to-r from-slate-500 to-gray-400 opacity-4 bg-transparent">
+          <div className="bg-gradient-to-r from-slate-500 to-gray-400 opacity-4 bg-transparent mt-20">
             <Footer />
           </div>
         </LoginProvider>

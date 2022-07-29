@@ -1,90 +1,118 @@
-import { useState, useContext } from "react"
-import { LoginContext } from "../contexts/LoginContext"
+import { useState, useContext } from "react";
+import { LoginContext } from "../contexts/LoginContext";
 
-import CreateMintForm from "../components/CreateMintForm"
-import MintCard from "../components/MintCard"
-import Loading from "../components/Loading"
+import CreateMintForm from "../components/CreateMintForm";
+import MintCard from "../components/MintCard";
+import Loading from "../components/Loading";
 
-import Web3Modal from "web3modal"
-import Web3 from "web3"
+import Web3Modal from "web3modal";
+import Web3 from "web3";
 
-import { contractAddress, abiFile } from "../utils/config"
+import { contractAddress, abiFile } from "../utils/config";
 
 function Mint() {
-  const [forms, setForms] = useState([])
-  const { account, loginStatus } = useContext(LoginContext)
+  const [forms, setForms] = useState([]);
+  const { account, loginStatus } = useContext(LoginContext);
 
-  const [status, setStatus] = useState("submit")
-  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState("submit");
+  const [loading, setLoading] = useState(false);
 
-  const [receipts, setReceipts] = useState([])
+  const [receipts, setReceipts] = useState([]);
 
   function addForm(newForm) {
     if (status === "clear") {
-      alert("Please clear the receipts to add new form.")
-      return
+      alert("Please clear the receipts to add new form.");
+      return;
     }
     setForms((prevForms) => {
-      return [...prevForms, newForm]
-    })
+      return [...prevForms, newForm];
+    });
   }
 
   function deleteForm(id) {
     setForms((prevForms) => {
-      return prevForms.filter((form, index) => index !== id)
-    })
+      return prevForms.filter((form, index) => index !== id);
+    });
   }
 
   async function handleSubmit() {
     if (status === "clear") {
-      setReceipts([])
-      setStatus("submit")
-      return
+      setReceipts([]);
+      setStatus("submit");
+      return;
     }
     if (!loginStatus) {
-      alert("You must be logged in to Mint.")
-      return
+      alert("You must be logged in to Mint.");
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      await mint()
-      setStatus("clear")
+      await mint();
+      setStatus("clear");
     } catch (e) {
-      console.log(e)
-      setStatus("submit")
+      console.log(e);
+      setStatus("submit");
     } finally {
-      setForms([])
-      setLoading(false)
+      setForms([]);
+      setLoading(false);
     }
   }
 
+  async function upload() {
+    const promise = new Promise((resolve, reject) => {
+      forms.forEach(async (form, index) => {
+        try {
+          const data = {
+            url: form.uri,
+          };
+          const response = await fetch("/api/upload", {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8",
+            },
+          });
+          console.log(response)
+          const json = await response.json();
+          form.uri = json.uri
+        } catch (e) {
+          console.log(e)
+        } finally {
+          if (index === forms.length - 1) resolve()
+        }
+      })
+    });
+    await promise
+  }
+
   async function mint() {
-    const web3Modal = new Web3Modal()
-    const connection = await web3Modal.connect()
-    const web3 = new Web3(connection)
-    const contract = new web3.eth.Contract(abiFile.abi, contractAddress)
+    await upload()
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const web3 = new Web3(connection);
+    const contract = new web3.eth.Contract(abiFile.abi, contractAddress);
     const receipt = await contract.methods.multipleMint(forms).send({
       from: account,
       maxPriorityFeePerGas: null,
       maxFeePerGas: null,
       gasLimit: web3.utils.toHex(1000000),
-    })
-    console.log(receipt)
-    let tokens = []
+    });
+    console.log(receipt);
+    let tokens = [];
 
     function getId(index) {
       return forms.length === 1
         ? receipt.events.Transfer.returnValues._tokenId
-        : receipt.events.Transfer[index].returnValues._tokenId
+        : receipt.events.Transfer[index].returnValues._tokenId;
     }
 
     forms.forEach((form, index) => {
       tokens.push({
         itemNumber: form.itemSerialNumber,
         tokenId: getId(index),
-      })
-    })
-    setReceipts(tokens)
+      });
+    });
+    setReceipts(tokens);
   }
 
   return (
@@ -105,7 +133,7 @@ function Mint() {
                 period={form.period}
                 onDelete={deleteForm}
               />
-            )
+            );
           })}
         {receipts.length !== 0 &&
           receipts.map((receipt, index) => {
@@ -117,11 +145,13 @@ function Mint() {
                 itemNumber={receipt.itemNumber}
                 tokenId={receipt.tokenId}
               />
-            )
+            );
           })}
       </div>
 
-      {loading && ( <Loading content="Your transaction is being processed. Please wait." /> )}
+      {loading && (
+        <Loading content="Your transaction is being processed. Please wait." />
+      )}
 
       {(forms.length !== 0 || receipts.length !== 0) && !loading && (
         <div className="flex justify-center">
@@ -136,7 +166,7 @@ function Mint() {
         </div>
       )}
     </>
-  )
+  );
 }
 
-export default Mint
+export default Mint;
