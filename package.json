@@ -4,7 +4,11 @@
   "description": "Blockchain based eCommerce warranty system using NFTs ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cd client/ && next",
+    "build": "cd client/ && next build",
+    "start": "cd client/ && next start -p $PORT",
+    "heroku-postbuild": "cd client/ && yarn build"
   },
   "keywords": [
     "warranty",
