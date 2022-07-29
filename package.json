@@ -8,7 +8,7 @@
     "dev": "cd client/ && next",
     "build": "cd client/ && next build",
     "start": "cd client/ && next start -p $PORT",
-    "heroku-postbuild": "cd client/ && yarn build"
+    "heroku-postbuild": "cd client/ && npm run build"
   },
   "keywords": [
     "warranty",
