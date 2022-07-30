@@ -1,6 +1,6 @@
 # WarNT
 
-This project implements a prototype version of a blockchain-based eCommerce warranty system using NFTs. Do read the proposed approach [here](RULES.md).
+This project implements a prototype version of a blockchain-based eCommerce warranty system using NFTs. Do read the proposed approach [here](RULES.md). App [demo](https://www.youtube.com/watch?v=5-LtWuk3z5Q).
 
 Deployed smart contract address on:
 - Polygon Testnet: `0x5Bc93C56ec25e6E52366673D3E7caF0baef032dd`
