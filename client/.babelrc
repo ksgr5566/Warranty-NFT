@@ -1,5 +1,4 @@
 {
-    "presets": [
-        ["@babel/preset-react", {"runtime": "automatic"}]
-    ]
+    "presets": ["next/babel"],
+    "plugins": []
 }

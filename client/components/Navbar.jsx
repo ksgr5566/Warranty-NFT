@@ -129,11 +129,9 @@ function Navbar() {
               {activeLink === "/decay" ? (<span className="font-bold text-slate-300">Decay</span>) : "Decay"}
             </a>
           </Link>
-          <Link href="/">
-            <a className="rounded-lg px-3 py-2 border-solid hover:bg-slate-800 border-indigo-600 md:mr-4" onClick={onNavClick}>
-              Docs
-            </a>
-          </Link>
+          <a className="rounded-lg px-3 py-2 border-solid hover:bg-slate-800 border-indigo-600 md:mr-4" href="https://github.com/ksgr5566/Warranty-NFT/blob/master/client/API.md" target="_blank" rel="noopener">
+            Docs
+          </a>
       </nav>
     </>
   );

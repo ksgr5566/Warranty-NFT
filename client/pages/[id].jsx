@@ -31,11 +31,13 @@ function Details() {
         if (web3.utils.isAddress(id)) {
           setQuery("address");
           setStart(true);
+          return
         } else if (id > 0) {
           await contract.methods.idToWarranty(id).call((err, res) => {
-            if (res) {
+            if (res && res.creator !== address0) {
               setQuery("id");
               setStart(true);
+              return
             } else {
               if (err) console.log(err);
               alert("This id is not existing.");
@@ -127,7 +129,7 @@ function Details() {
             <div className="bet:px-6 py-1 px-0">
               {response.repairDetails.map((obj, index) => {
                 return (
-                  <div className="border-soild border-gray-400 border-2 border-x-0 my-2 sm:p-2">
+                  <div key={index} className="border-soild border-gray-400 border-2 border-x-0 my-2 sm:p-2">
                     <h2 className="font-serif text-gray-400 p-1">{`Repair ${
                       index + 1
                     }`}</h2>
@@ -151,7 +153,7 @@ function Details() {
           <div className="bet:px-6 py-1 px-0">
           {response.transactionHistory.map((obj, index) => {
                 return (
-                  <div className="border-y-soild border-gray-400 border-2 border-x-0 my-2 sm:p-2">
+                  <div key={index} className="border-y-soild border-gray-400 border-2 border-x-0 my-2 sm:p-2">
                     <h2 className="font-serif text-gray-400 p-1">{`Transaction ${
                       index + 1
                     }`}</h2>
