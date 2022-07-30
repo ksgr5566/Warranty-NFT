@@ -113,6 +113,7 @@ contract("WarrantyNFT", (accounts) => {
         beforeEach(async () => {
             res1 = await contractInstance.mint("No. 1", "No1.uri.com", false , 3 , 300, {from: alice})
             id1 = res1.logs[0].args._tokenId
+            await contractInstance.transferTo(bob, id1, {from:alice})
             res2 = await contractInstance.mint("No. 2", "No2.uri.com", false , 3 , 300, {from: alice})
             id2 = res2.logs[0].args._tokenId
         })
