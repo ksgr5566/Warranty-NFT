@@ -1,28 +1,44 @@
 {
   "name": "warranty-nft",
-  "version": "1.0.0",
-  "description": "Blockchain based eCommerce warranty system using NFTs ",
-  "main": "index.js",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "warranty",
-    "NFT",
-    "eCommerce"
-  ],
-  "author": "Kovvuri Sai Gopal Reddy",
-  "license": "MIT",
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
-    "@nomiclabs/hardhat-truffle5": "^2.0.6",
-    "@nomiclabs/hardhat-web3": "^2.0.0",
-    "chai": "^4.3.6",
-    "hardhat": "^2.10.1",
-    "web3": "^1.7.4"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p $PORT",
+    "lint": "next lint",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.7.0",
-    "dotenv": "^16.0.1"
+    "@heroicons/react": "^1.0.6",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "fast-two-sms": "^3.0.0",
+    "formidable": "^2.0.1",
+    "fs": "^0.0.1-security",
+    "moralis": "^1.10.1",
+    "next": "12.2.3",
+    "node-fetch": "^3.2.9",
+    "path": "^0.12.7",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "swr": "^1.3.0",
+    "undici": "^5.8.0",
+    "web3": "^1.7.4",
+    "web3-parse-receipt-events": "^1.0.2",
+    "web3.storage": "^4.3.0",
+    "web3modal": "^1.9.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.9",
+    "@babel/eslint-parser": "^7.18.9",
+    "@babel/preset-react": "^7.18.6",
+    "autoprefixer": "^10.4.7",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^8.20.0",
+    "eslint-config-next": "12.2.3",
+    "postcss": "^8.4.14",
+    "postcss-nesting": "^10.1.10",
+    "tailwindcss": "^3.1.6"
   }
 }

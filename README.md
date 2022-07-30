@@ -1,31 +1,22 @@
-# WarNT
+Deployed app on Heroku: [https://warnt.herokuapp.com/](https://warnt.herokuapp.com/)
 
-This project implements a prototype version of a blockchain-based eCommerce warranty system using NFTs. Do read the proposed approach [here](RULES.md).
-
-Deployed smart contract address on:
-- Polygon Testnet: `0x5Bc93C56ec25e6E52366673D3E7caF0baef032dd`
+Do read the api [docs](API.md) to work with WarNT api.
 
 ---
 
 ## Local Installation
 
-1. Clone the repository.
+1. Change directory, `cd client`.
 
-2. If you are using nvm, run `nvm use` to use the version of Node from the .nvmrc file.
+2. Install dependencies: `yarn`.
 
-3. Install dependencies: `npm install`.
+3. Copy `.env.template`, `.env.local.template`  to `.env` and `.env.local` and edit the environment variables.
+Notice that all the environment variables used by the client start with `NEXT_PUBLIC_`. This ensures that only those are accessible by the client, protecting your API secret. Do change the `contractAddress` field in `/utils/config.js` if you are using you own deployed version of the contract.
 
-4. Copy `.env.template` to `.env` and edit the environment variables.
+4. Run the server and the client app: ```yarn run dev```. This will start both the api and the client-app.
 
-5. To test the smart contract: `npx hardhat test`
+Open [http://localhost:3000](http://localhost:3000) to interact with the client-app in your browser.
 
-6. To deploy the contract run: `npx hardhat run --network <your-network> scripts/deploy.js`
-
-7. Do visit [harhdhat](https://hardhat.org/hardhat-runner/docs/getting-started#overview) to learn more on
-   deployment and running locally.
+You may also use Postman to send requests to ```http://localhost:3000/api```.
 
 ---
-
-## License
-
-This project is licensed under the MIT License- see the [LICENSE](LICENSE) file for details.
