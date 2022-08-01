@@ -65,7 +65,7 @@ contract WarrantyNFT {
     }
 
     /**
-     * @notice Gets the created ids of an address 
+     * @notice Checks if the message sender is the creator of the token. 
      */
     modifier onlyCreator (uint _tokenId) {
         require(msg.sender == idToWarranty[_tokenId].creator,
