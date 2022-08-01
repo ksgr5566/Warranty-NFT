@@ -2,7 +2,7 @@
 
 - POST request and sending transaction objects: 
 
-1. Minting: `/api/api/transaction-object?operation=mint`
+1. Minting: `/api/transaction-object?operation=mint`
 
 Expected Input: 
 ```
@@ -26,7 +26,7 @@ Expected Input:
 The data is an array, you can pass in details of multiple objects to mint them
 at the same time.
 
-2. Transfer: `/api/api/transaction-object?operation=transfer`
+2. Transfer: `/api/transaction-object?operation=transfer`
 
 Expected Input: 
 ```
@@ -39,7 +39,7 @@ Expected Input:
 }
 ```
 
-3. Approve: `/api/api/transaction-object?operation=approve`
+3. Approve: `/api/transaction-object?operation=approve`
 
 Expected Input: 
 ```
@@ -52,7 +52,7 @@ Expected Input:
 }
 ```
 
-4. Decay: `/api/api/transaction-object?operation=decay`
+4. Decay: `/api/transaction-object?operation=decay`
 
 Expected Input: 
 ```
@@ -64,7 +64,7 @@ Expected Input:
 }
 ```
 
-5. Replace-Items: `/api/api/transaction-object?operation=replace`
+5. Replace-Items: `/api/transaction-object?operation=replace`
 
 Expected Input: 
 ```
@@ -77,7 +77,7 @@ Expected Input:
 }
 ```
 
-6. Repair-Items: `/api/api/transaction-object?operation=repair`
+6. Repair-Items: `/api/transaction-object?operation=repair`
 
 Expected Input: 
 ```
